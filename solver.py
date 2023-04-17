@@ -42,7 +42,7 @@ def verify_board_dimensions(board):
     else:
         return True
 
-def board_to_squares(board):
+def extract_squares(board):
     square_size = int(sqrt(sqrt(board.size)))
 
     # create an example array
@@ -52,6 +52,34 @@ def board_to_squares(board):
     squares = arr.reshape((square_size, square_size, square_size, square_size)).transpose((0, 2, 1, 3)).reshape((square_size ** 2, square_size, square_size))
 
     return(squares)
+
+def nums_not_in(shape):
+    n = shape.size
+    nums_not_in = {i + 1 for i in range(n) if i + 1 not in shape}
+    return nums_not_in
+
+
+def makes_notes(board):
+    width, height = board.shape
+    notes = [[{} for row in range(width)] for col in range(height)]
+    squares = extract_squares(board)
+    ys, xs = np.where(board == 0)
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        square_num = x // 3 + 3 * (y // 3)
+        square = squares[square_num]
+        nums_not_in_square = nums_not_in(square)
+        nums_not_in_row = nums_not_in(board[y])
+        nums_not_in_col = nums_not_in(board.transpose()[x])
+        possible_nums = nums_not_in_square.intersection(nums_not_in_row, nums_not_in_col)
+        notes[x][y] = possible_nums
+    return np.array(notes)
+    
+
+# def fill_board(board, notes):
+#     if len(possible_nums) == 1:
+#         board[x][y] = list(possible_nums)[0]
 
 
 # Create a sample Sudoku as a 9x9 NumPy array
@@ -65,6 +93,12 @@ data = [[5, 3, 0, 0, 7, 0, 0, 0, 0],
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]]
 board = np.array(data)
+print(board)
 
-squares = board_to_squares(board)
+notes = makes_notes(board)
+print(notes)
+
+squares = extract_squares(notes)
 print(squares)
+
+

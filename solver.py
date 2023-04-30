@@ -7,19 +7,13 @@ from numpy.lib.stride_tricks import as_strided
 class Board():
     def __init__(self, data):
         self.n = len(data)
+        if not sqrt(self.n).is_integer():
+            raise ValueError("data must be a square size (i.e 4,9, 16, 25...).")
         self.box_size = int(sqrt(self.n))
         self.board = np.array(data)
-
-    def verify_board_dimensions():
         height, width = self.board.shape
-        if height != width: 
-            print("board is not square")
-            return False
-        elif not math.sqrt(height).is_integer():
-            print("board's n is not a square")
-            return False
-        else:
-            return True
+        if height != width:
+            raise ValueError("data's height is not equal to its width.")
 
     def display(self):
         # Create a colored grid with Matplotlib

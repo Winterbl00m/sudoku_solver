@@ -5,6 +5,9 @@ from math import sqrt
 from numpy.lib.stride_tricks import as_strided
 
 def display_board(board):
+    num_symbols = int(sqrt(board.size))
+    square_size = int(sqrt(num_symbols))
+
     # Create a colored grid with Matplotlib
     fig, ax = plt.subplots(figsize=(5, 5))
 
@@ -12,19 +15,20 @@ def display_board(board):
     ax.grid(which='major', color='grey', linewidth=1)
 
     # Set the ticks and labels for the x and y axes
-    ax.set_xticks(np.arange(-0.5, 9.5, 1))
-    ax.set_yticks(np.arange(-0.5, 9.5, 1))
+
+    ax.set_xticks(np.arange(-0.5, num_symbols + 0.5, 1))
+    ax.set_yticks(np.arange(-0.5, num_symbols + 0.5, 1))
     ax.set_xticklabels([])
     ax.set_yticklabels([])
 
-    for i in range(3):
-        ax.axhline(3* i - .5, color='grey', linewidth=4)
-        ax.axvline(3 * i - .5, color='grey', linewidth=4)
+    for i in range(square_size):
+        ax.axhline(square_size * i - .5, color='grey', linewidth=4)
+        ax.axvline(square_size * i - .5, color='grey', linewidth=4)
 
     # Add the numbers to the plot
-    for i in range(9):
-        for j in range(9):
-            if board[i, j] != 0:
+    for i in range(num_symbols):
+        for j in range(num_symbols):
+            if board[i, j] != 0 and board[i,j] != "0":
                 ax.text(j, i, str(board[i, j]), fontsize=20, 
                         ha='center', va='center', color='black')
 
@@ -53,10 +57,21 @@ def extract_squares(board):
 
     return(squares)
 
-def nums_not_in(shape):
+def extract_square(board, pos):
+    # Check box
+    box_x = pos[1] // 3
+    box_y = pos[0] // 3
+
+    for i in range(box_y*3, box_y*3 + 3):
+        for j in range(box_x * 3, box_x*3 + 3):
+            if bo[i][j] == num and (i,j) != pos:
+                return False
+
+
+def nums_in(shape):
     n = shape.size
-    nums_not_in = {i + 1 for i in range(n) if i + 1 not in shape}
-    return nums_not_in
+    nums_in = {i + 1 for i in range(n) if i + 1 in shape}
+    return nums_in
 
 
 def makes_notes(board):
@@ -75,11 +90,56 @@ def makes_notes(board):
         possible_nums = nums_not_in_square.intersection(nums_not_in_row, nums_not_in_col)
         notes[x][y] = possible_nums
     return np.array(notes)
-    
 
-# def fill_board(board, notes):
-#     if len(possible_nums) == 1:
-#         board[x][y] = list(possible_nums)[0]
+def valid(board, num, pos):
+    x,y = pos
+    row = board[x]
+    col = board.transpose()[y]
+
+    # Check box
+    box_x = pos[1] // 3
+    box_y = pos[0] // 3
+
+    for i in range(box_y*3, box_y*3 + 3):
+        for j in range(box_x * 3, box_x*3 + 3):
+            if board[i][j] == num and (i,j) != pos:
+                return False
+
+    if num in nums_in(row):
+        return False
+    if num in nums_in(col):
+        return False
+
+    return True
+
+
+def find_empty(board):
+    if np.isin(0, board):
+        indices = np.where(board == 0)
+        i = indices[0][0]
+        j = indices[1][0]
+        return i,j    
+    else:
+        return None
+
+
+def solve(board):
+    find = find_empty(board)
+    if not find:
+        return True
+    else:
+        row, col = find
+
+    for i in range(1,10):
+        if valid(board, i, (row, col)):
+            board[row][col] = i
+
+            if solve(board):
+                return True
+
+            board[row][col] = 0
+
+    return False
 
 
 # Create a sample Sudoku as a 9x9 NumPy array
@@ -92,13 +152,8 @@ data = [[5, 3, 0, 0, 7, 0, 0, 0, 0],
         [0, 6, 0, 0, 0, 0, 2, 8, 0],
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]]
+
 board = np.array(data)
 print(board)
-
-notes = makes_notes(board)
-print(notes)
-
-squares = extract_squares(notes)
-print(squares)
-
-
+solve(board)
+print(board)

@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 from math import sqrt
 from numpy.lib.stride_tricks import as_strided
 
+#Author: Hazel Smirg
+#Date 04/20/2023
+#This Code is apated from the solver showen in 
+#https://www.techwithtim.net/tutorials/python-programming/sudoku-solver-backtracking/ 
+
 class Board():
     """An Board Object
     Attributes:

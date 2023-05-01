@@ -5,6 +5,15 @@ from math import sqrt
 from numpy.lib.stride_tricks import as_strided
 
 class Board():
+    """An Board Object
+    Attributes:
+    n : int 
+        the size of the sudoku board
+    box_size : int 
+       the size of a box in the sudoku board
+    board : (n by n) np.array
+        the array containing the sudoku board
+    """
     def __init__(self, data):
         self.n = len(data)
         if not sqrt(self.n).is_integer():
@@ -16,6 +25,9 @@ class Board():
             raise ValueError("data's height is not equal to its width.")
 
     def display(self):
+        """
+        Displays the sudoku board using matplotlib
+        """
         # Create a colored grid with Matplotlib
         fig, ax = plt.subplots(figsize=(5, 5))
 
@@ -44,6 +56,16 @@ class Board():
         plt.show()
 
     def valid(self, num, pos):
+        """
+        Check if a num can legally be placed in a pos
+
+        Parameters:
+            num (int) : int to check
+            pos (tuple of ints) ; (x,y) the xy coordinates to check
+
+        Returns:
+            True if num is valid and False if not
+        """
         x,y = pos
         row = self.board[x]
         col = self.board.transpose()[y]
@@ -68,16 +90,29 @@ class Board():
 
 
     def find_empty(self):
+        """
+        Finds an empty space on the sudoku board
+
+        Returns:
+            x,y pair if empty space is found or None if none is found
+        """
         if np.isin(0, self.board):
             indices = np.where(self.board == 0)
-            i = indices[0][0]
-            j = indices[1][0]
-            return i,j    
+            x = indices[0][0]
+            y = indices[1][0]
+            return x,y    
         else:
             return None
 
 
     def solve(self):
+        """
+        Solves the Sudoku board
+
+        Returns:
+           True if solution is found
+           False if no solution is found
+        """
         find = self.find_empty()
         if not find:
             return True

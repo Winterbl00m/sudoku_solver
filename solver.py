@@ -147,6 +147,12 @@ data = [[5, 3, 0, 0, 7, 0, 0, 0, 0],
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]]
 
+# Create a sample Sudoku as a 4x4 NumPy array
+data = [[0, 0, 3, 0],
+        [0, 4, 0, 0],
+        [3, 0, 0, 0],
+        [0, 0, 0, 0]]
+
 board = Board(data)
-board.solve()
+print(board.solve())
 board.display()

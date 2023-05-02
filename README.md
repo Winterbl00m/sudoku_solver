@@ -6,4 +6,5 @@ This is a backtracking algorithm to solve a n-by-n Sudoku grid. It is adapted fr
 Example of how to input Sudoku boards to the solver can be found in solver.py
 
 ## How to Run Code
+run `pip instal -r requiremenats.txt`
 run `solver.py`
